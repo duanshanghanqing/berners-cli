@@ -1,13 +1,10 @@
 {
-  "name": "@berners-cli/core",
+  "name": "log",
   "version": "1.0.0",
-  "description": "berners-cli core",
+  "description": "> TODO: description",
   "author": "高 俊峰 [WFE] <junfeng.gao@ingeek.com>",
-  "homepage": "",
+  "homepage": "https://github.com/duanshanghanqing/berners-cli#readme",
   "license": "ISC",
-  "bin": {
-    "berners-cli": "bin/index.js"
-  },
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -16,12 +13,17 @@
   "files": [
     "lib"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duanshanghanqing/berners-cli.git"
+  },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
+  "bugs": {
+    "url": "https://github.com/duanshanghanqing/berners-cli/issues"
+  },
   "dependencies": {
-    "@berners-cli/log": "file:../../utils/log",
-    "import-local": "^3.0.2",
     "npmlog": "^4.1.2"
   }
 }

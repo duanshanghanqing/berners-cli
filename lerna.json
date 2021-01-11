@@ -1,6 +1,9 @@
 {
   "packages": [
-    "core/cli"
+    "core/*",
+    "commands/*",
+    "models/*",
+    "utils/*" 
   ],
   "version": "1.0.0"
 }
