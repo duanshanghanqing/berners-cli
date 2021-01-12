@@ -11,10 +11,19 @@ const pkg = require('../package.json');
 const log = require('@berners-cli/log');
 function core() {
     checkPkgVersion();
+    checkNodeVersion();
 }
 
 // 1.检查版本号
 function checkPkgVersion() {
     console.log(pkg.version);
-    log();
+    log.info('ok');
+    log.verbose('debugger');
+}
+
+// 2.检查node版本号
+function checkNodeVersion() {
+    // 第一步获取node版本号
+    console.log(process.version);
+    // 第二步比较最低版本号
 }
