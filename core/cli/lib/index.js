@@ -1,18 +1,9 @@
 'use strict';
 
-// 0.检查入参
-function checkInputArgs() {
-    const argv = require('minimist')(process.argv.slice(2));
-    if (argv.debug) {
-        process.env.LOG_LEVEL = 'verbose'; // 设置log级别
-    } else {
-        process.env.LOG_LEVEL = 'info'; // 设置成默认
-    }
-}
-
-checkInputArgs();
-
 module.exports = core;
+
+// 优先执行
+checkInputArgs();
 
 // require 支持 
 // .js(module.exports/export) -> 
@@ -68,5 +59,15 @@ function checkUserHome() {
     console.log(userHome); // C:\Users\IG_G005
     if (!userHome || !pathExists.sync(userHome)) { // 路径不存在
         throw new Error(colors.red(`当前登录用户主目录不存在`));
+    }
+}
+
+// 5.检查入参
+function checkInputArgs() {
+    const argv = require('minimist')(process.argv.slice(2));
+    if (argv.debug) {
+        process.env.LOG_LEVEL = 'verbose'; // 设置log级别
+    } else {
+        process.env.LOG_LEVEL = 'info'; // 设置成默认
     }
 }
