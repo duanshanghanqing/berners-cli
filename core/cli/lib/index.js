@@ -10,13 +10,14 @@ checkInputArgs();
 // .json(JSON.parse)
 // .node(process.dlopen) 
 // 其他文件 当成成js文件执行
+const path = require('path');
 const semver = require('semver');
 const colors = require('colors/safe');
-const pathExists = require('path-exists');
+const pathExists = require('path-exists').sync;
 const userHome = require('user-home');
 const pkg = require('../package.json');
 const log = require('@berners-cli/log');
-const { LOWEST_NOOE_VERSION } = require('./const');
+const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 
 function core() {
     try {
@@ -24,6 +25,8 @@ function core() {
         checkNodeVersion();
         checkRoot();
         checkUserHome();
+        checkEnv();
+        checkGlobalUpdata();
     } catch (error) {
         log.error(error.message);
     }
@@ -54,10 +57,10 @@ function checkRoot() {
 }
 
 // 4.检查用户主目录
-// pathExists.sync(path)
+// pathExists(path)
 function checkUserHome() {
-    console.log(userHome); // C:\Users\IG_G005
-    if (!userHome || !pathExists.sync(userHome)) { // 路径不存在
+    // console.log(userHome); // C:\Users\IG_G005
+    if (!userHome || !pathExists(userHome)) { // 路径不存在
         throw new Error(colors.red(`当前登录用户主目录不存在`));
     }
 }
@@ -70,4 +73,52 @@ function checkInputArgs() {
     } else {
         process.env.LOG_LEVEL = 'info'; // 设置成默认
     }
+}
+
+// 6.获取环境变量，设置环境变量
+function checkEnv() {
+    // 读取.env环境中设置的变量
+    const dotenvPath = path.relative(userHome, '.env'); // 更多环境变量，配置在这个文件中
+    // 设置环境变量，之后就可以通过 process.env 获取
+    if (pathExists(dotenvPath)) { // 是否存在
+        require('dotenv').config({
+            path: dotenvPath,
+        });
+    }
+    // 设置默认环境变量
+    createDefaultConfig();
+    // 读取
+    // console.log(process.env);
+}
+
+// 创建环境变量
+function createDefaultConfig() {
+    const cliConfig = {
+        home: userHome,
+    }
+    // 这个环境变量存在
+    if (process.env.CLI_HOME) {
+        cliConfig['cliHome'] = path.join(userHome, process.env.CLI_HOME);
+    } else {
+    // 不存在，就设置这个环境变量
+        cliConfig['cliHome'] = path.join(userHome, DEFAULT_CLI_HOME);
+    }
+
+    // 把最终生成的，赋值给环境变量
+    process.env.CLI_HOME_PATH = cliConfig['cliHome'];
+}
+
+// 7 检查脚手架是否要更新
+function checkGlobalUpdata() {
+    // 1.当前版本号和模块名
+    const currentVersion = pkg.version;
+    const npmName = pkg.name;
+    // 2.调用npm API，获取所有的版本号
+    const { getNpmInfo } = require('@berners-cli/get-npm-info');
+    // getNpmInfo(npmName);
+    getNpmInfo('url-join');
+    // 3.提取所有版本号，比对那些版本号是大于当前版本号
+    // 4.获取最新的版本号，提示更新到该版本
+
+
 }

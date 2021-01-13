@@ -1,0 +1,31 @@
+{
+  "name": "@berners-cli/get-npm-info",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "高 俊峰 [WFE] <junfeng.gao@ingeek.com>",
+  "homepage": "https://github.com/duanshanghanqing/berners-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duanshanghanqing/berners-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/duanshanghanqing/berners-cli/issues"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "semver": "^7.3.4",
+    "url-join": "^4.0.1"
+  }
+}
