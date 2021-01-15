@@ -123,8 +123,4 @@ async function checkGlobalUpdata() {
     if (lastVersion) {
         log.warn('更新提醒', colors.yellow(`请手动更新 ${npmName}, 当前的版本是 ${currentVersion}，最新版本：${lastVersion}，执行 npm install -g ${npmName}`));
     }
-    // 3.提取所有版本号，比对那些版本号是大于当前版本号
-    // 4.获取最新的版本号，提示更新到该版本
-
-
 }
