@@ -109,14 +109,16 @@ function createDefaultConfig() {
 }
 
 // 7 检查脚手架是否要更新
-function checkGlobalUpdata() {
+async function checkGlobalUpdata() {
     // 1.当前版本号和模块名
     const currentVersion = pkg.version;
     const npmName = pkg.name;
     // 2.调用npm API，获取所有的版本号
-    const { getNpmInfo } = require('@berners-cli/get-npm-info');
+    const { getSemverVersion } = require('@berners-cli/get-npm-info');
     // getNpmInfo(npmName);
-    getNpmInfo('url-join');
+    console.log('currentVersion', currentVersion);
+    const versions = await getSemverVersion(currentVersion, 'url-join');
+    console.log(versions);
     // 3.提取所有版本号，比对那些版本号是大于当前版本号
     // 4.获取最新的版本号，提示更新到该版本
 
