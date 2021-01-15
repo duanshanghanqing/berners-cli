@@ -31,12 +31,22 @@ async function getNpmVersions(npmName, _registry) {
     return [];
 }
 
+// 获取满足高于当前包版本号的版本列表
 async function getSemverVersion(currentVersion, npmName, _registry) {
     // 获取全部版本列表
-    const versions = await getNpmVersions(npmName, _registry);
-    console.log('versions', versions);
-    // 过滤大于当前的版本号
-    return versions.filter((version) => semver.satisfies(version, `^${currentVersion}`));
+    let versions;
+    try {
+        versions = await getNpmVersions(npmName, _registry);
+    } catch (error) {
+        return null;
+    }
+    // 返回大于当前版本号的版本，在按照从大到小排序
+    const newVersions = versions.filter((version) => semver.lt(currentVersion, version)).sort((a, b) => semver.gt(a, b));
+    // console.log(newVersions);
+    if (Array.isArray(newVersions) && newVersions.length > 0) {
+        return newVersions[0];
+    }
+    return null;
 }
 
 module.exports = {

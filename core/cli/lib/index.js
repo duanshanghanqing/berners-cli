@@ -113,12 +113,16 @@ async function checkGlobalUpdata() {
     // 1.当前版本号和模块名
     const currentVersion = pkg.version;
     const npmName = pkg.name;
-    // 2.调用npm API，获取所有的版本号
+    // 2.调用npm API，获取最新版本号，存在最新版本号就更新。
+    // 内部获取全部版本号，根据和当前版本号比较，获取大于当前版本号的版本列表，取出最新
     const { getSemverVersion } = require('@berners-cli/get-npm-info');
     // getNpmInfo(npmName);
-    console.log('currentVersion', currentVersion);
-    const versions = await getSemverVersion(currentVersion, 'url-join');
-    console.log(versions);
+    // console.log('currentVersion', currentVersion);
+    // 获取当前包最大的版本号
+    const lastVersion = await getSemverVersion(currentVersion, npmName);
+    if (lastVersion) {
+        log.warn('更新提醒', colors.yellow(`请手动更新 ${npmName}, 当前的版本是 ${currentVersion}，最新版本：${lastVersion}，执行 npm install -g ${npmName}`));
+    }
     // 3.提取所有版本号，比对那些版本号是大于当前版本号
     // 4.获取最新的版本号，提示更新到该版本
 
