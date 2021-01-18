@@ -162,6 +162,12 @@ function registerCommand() {
         }
     });
 
+
+    // 对有意义的参数才解析
+    // console.log(process.argv);
+    if (process.argv.length === 3) {
+        program.outputHelp();
+    }
     // 这句话要写在结尾， 解析参数
     program.parse(process.argv);
 }
