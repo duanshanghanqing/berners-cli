@@ -2,8 +2,8 @@
 
 module.exports = core;
 
-// 优先执行
-checkInputArgs();
+// 5.检查入参优先执行
+// checkInputArgs();
 
 // require 支持 
 // .js(module.exports/export) -> 
@@ -15,9 +15,13 @@ const semver = require('semver');
 const colors = require('colors/safe');
 const pathExists = require('path-exists').sync;
 const userHome = require('user-home');
+const { Command } = require('commander');
 const pkg = require('../package.json');
 const log = require('@berners-cli/log');
 const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
+
+// 实例化脚手架对象
+const program = new Command();
 
 function core() {
     try {
@@ -27,6 +31,7 @@ function core() {
         checkUserHome();
         checkEnv();
         checkGlobalUpdata();
+        registerCommand();
     } catch (error) {
         log.error(error.message);
     }
@@ -100,7 +105,7 @@ function createDefaultConfig() {
     if (process.env.CLI_HOME) {
         cliConfig['cliHome'] = path.join(userHome, process.env.CLI_HOME);
     } else {
-    // 不存在，就设置这个环境变量
+        // 不存在，就设置这个环境变量
         cliConfig['cliHome'] = path.join(userHome, DEFAULT_CLI_HOME);
     }
 
@@ -123,4 +128,40 @@ async function checkGlobalUpdata() {
     if (lastVersion) {
         log.warn('更新提醒', colors.yellow(`请手动更新 ${npmName}, 当前的版本是 ${currentVersion}，最新版本：${lastVersion}，执行 npm install -g ${npmName}`));
     }
+}
+
+// 8 命令注册
+function registerCommand() {
+    program
+        .name(Object.keys(pkg.bin)[0])// Usage: imooc-test-berners <command> [options] 实现nanme
+        .usage('<command> [options]') // Usage: imooc-test-berners <command> [options] 实现后面两个参数
+        .version(pkg.version)
+        .option('-d, --debug', '是否开启调试模式', false);
+    
+    // 实现debug
+    program.on('option:debug', () => {
+        const options = program.opts();
+        if (options.debug) {
+            process.env.LOG_LEVEL = 'verbose'; // 修改日志级别
+        } else {
+            process.env.LOG_LEVEL = 'info'; 
+        }
+        log.level = process.env.LOG_LEVEL; // 设置日志级别
+        // log.verbose('test');
+    });
+
+    // 实现不存在的命令提醒
+    program.on('command:*', (obj) => { // imooc-test-berners aaa
+        // console.log(obj); // [ 'aaa' ] 不可用用的命令
+        if (Array.isArray(obj) && obj.length > 0) {
+            console.log(colors.red( `未知的命令：${obj.join(',')}`));
+            const availableCommands = program.commands.map(cmd => cmd.name());
+            if (availableCommands.length > 0) {
+                console.log(colors.red( `可用的命令：${vaailableCommands.join(',')}`));
+            }
+        }
+    });
+
+    // 这句话要写在结尾， 解析参数
+    program.parse(process.argv);
 }
