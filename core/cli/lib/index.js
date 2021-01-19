@@ -137,13 +137,17 @@ function registerCommand() {
         .name(Object.keys(pkg.bin)[0])// Usage: imooc-test-berners <command> [options] 实现nanme
         .usage('<command> [options]') // Usage: imooc-test-berners <command> [options] 实现后面两个参数
         .version(pkg.version)
-        .option('-d, --debug', '是否开启调试模式', false);
+        .option('-d, --debug', '是否开启调试模式', false)
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '')
+        ;
 
     // 注册 berners-cli init 命令
     program
         .command('init [projectName]')
         .option('-f, --force', '是否强制初始化项目')
-        .action(init);
+        
+        .action(init)
+        ;
     
     // 实现debug
     program.on('option:debug', () => {
