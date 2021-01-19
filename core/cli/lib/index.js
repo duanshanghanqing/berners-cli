@@ -18,6 +18,7 @@ const userHome = require('user-home');
 const { Command } = require('commander');
 const pkg = require('../package.json');
 const log = require('@berners-cli/log');
+const init = require('@berners-cli/init');
 const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 
 // 实例化脚手架对象
@@ -137,6 +138,12 @@ function registerCommand() {
         .usage('<command> [options]') // Usage: imooc-test-berners <command> [options] 实现后面两个参数
         .version(pkg.version)
         .option('-d, --debug', '是否开启调试模式', false);
+
+    // 注册 berners-cli init 命令
+    program
+        .command('init [projectName]')
+        .option('-f, --force', '是否强制初始化项目')
+        .action(init);
     
     // 实现debug
     program.on('option:debug', () => {
@@ -161,6 +168,11 @@ function registerCommand() {
             }
         }
     });
+    
+    if (process.argv.length < 3) {
+        program.outputHelp();
+    }
+
     // 这句话要写在结尾， 解析参数
     program.parse(process.argv);
 }
