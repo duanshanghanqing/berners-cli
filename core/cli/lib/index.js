@@ -26,16 +26,20 @@ const program = new Command();
 
 function core() {
     try {
-        checkPkgVersion();
-        checkNodeVersion();
-        checkRoot();
-        checkUserHome();
-        checkEnv();
-        checkGlobalUpdata();
+        prepare();
         registerCommand();
     } catch (error) {
         log.error(error.message);
     }
+}
+
+function prepare() {
+    checkPkgVersion();
+    checkNodeVersion();
+    checkRoot();
+    checkUserHome();
+    checkEnv();
+    checkGlobalUpdata();
 }
 
 // 1.检查版本号
@@ -72,14 +76,14 @@ function checkUserHome() {
 }
 
 // 5.检查入参
-function checkInputArgs() {
-    const argv = require('minimist')(process.argv.slice(2));
-    if (argv.debug) {
-        process.env.LOG_LEVEL = 'verbose'; // 设置log级别
-    } else {
-        process.env.LOG_LEVEL = 'info'; // 设置成默认
-    }
-}
+// function checkInputArgs() {
+//     const argv = require('minimist')(process.argv.slice(2));
+//     if (argv.debug) {
+//         process.env.LOG_LEVEL = 'verbose'; // 设置log级别
+//     } else {
+//         process.env.LOG_LEVEL = 'info'; // 设置成默认
+//     }
+// }
 
 // 6.获取环境变量，设置环境变量
 function checkEnv() {
@@ -138,41 +142,46 @@ function registerCommand() {
         .usage('<command> [options]') // Usage: imooc-test-berners <command> [options] 实现后面两个参数
         .version(pkg.version)
         .option('-d, --debug', '是否开启调试模式', false)
-        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '')
-        ;
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
     // 注册 berners-cli init 命令
     program
         .command('init [projectName]')
         .option('-f, --force', '是否强制初始化项目')
-        
-        .action(init)
-        ;
-    
+        .action(init);
+
     // 实现debug
     program.on('option:debug', () => {
         const options = program.opts();
         if (options.debug) {
             process.env.LOG_LEVEL = 'verbose'; // 修改日志级别
         } else {
-            process.env.LOG_LEVEL = 'info'; 
+            process.env.LOG_LEVEL = 'info';
         }
         log.level = process.env.LOG_LEVEL; // 设置日志级别
         // log.verbose('test');
+    });
+
+    // 监听targetPath属性，在写入环境变量中
+    program.on('option:targetPath', () => {
+        const options = program.opts();
+        if (options.targetPath) {
+            process.env.CLI_TARGET_PATH = options.targetPath;
+        }
     });
 
     // 实现不存在的命令提醒
     program.on('command:*', (obj) => { // imooc-test-berners aaa
         // console.log(obj); // [ 'aaa' ] 不可用用的命令
         if (Array.isArray(obj) && obj.length > 0) {
-            console.log(colors.red( `未知的命令：${obj.join(',')}`));
+            console.log(colors.red(`未知的命令：${obj.join(',')}`));
             const availableCommands = program.commands.map(cmd => cmd.name());
             if (availableCommands.length > 0) {
-                console.log(colors.red( `可用的命令：${vaailableCommands.join(',')}`));
+                console.log(colors.red(`可用的命令：${vaailableCommands.join(',')}`));
             }
         }
     });
-    
+
     if (process.argv.length < 3) {
         program.outputHelp();
     }
