@@ -49,8 +49,13 @@ async function getSemverVersion(currentVersion, npmName, _registry) {
     return null;
 }
 
+function getDefineRegistry() {
+    return define_registry;
+}
+
 module.exports = {
     getNpmInfo,
     getNpmVersions,
     getSemverVersion,
+    getDefineRegistry,
 };

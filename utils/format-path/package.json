@@ -1,8 +1,8 @@
 {
-  "name": "@berners-cli/exec",
+  "name": "@berners-cli/format-path",
   "version": "1.0.0",
   "description": "> TODO: description",
-  "author": "高 俊峰 [WFE] <junfeng.gao@ingeek.com>",
+  "author": "gaojunfeng <490771426@qq.com>",
   "homepage": "https://github.com/duanshanghanqing/berners-cli#readme",
   "license": "ISC",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
     "lib"
   ],
   "publishConfig": {
-    "access": "public"
+    "registry": "https://registry.npm.taobao.org/"
   },
   "repository": {
     "type": "git",
@@ -25,8 +25,5 @@
   },
   "bugs": {
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
-  },
-  "dependencies": {
-    "@berners-cli/package": "file:../../models/package"
   }
 }

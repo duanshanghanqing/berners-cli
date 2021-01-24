@@ -19,6 +19,7 @@ const { Command } = require('commander');
 const pkg = require('../package.json');
 const log = require('@berners-cli/log');
 const init = require('@berners-cli/init');
+const exec = require('@berners-cli/exec');
 const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 
 // 实例化脚手架对象
@@ -144,11 +145,11 @@ function registerCommand() {
         .option('-d, --debug', '是否开启调试模式', false)
         .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
-    // 注册 berners-cli init 命令
+    // 注册 berners-cli init test --targetPath /xxx 命令
     program
         .command('init [projectName]')
         .option('-f, --force', '是否强制初始化项目')
-        .action(init);
+        .action(exec);
 
     // 实现debug
     program.on('option:debug', () => {
