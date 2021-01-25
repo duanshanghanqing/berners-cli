@@ -7,6 +7,8 @@ module.exports = init;
 //     console.log(name, options, command.parent._optionValues);
 // }
 
+
+// berners-cli init test --targetPath D:/code/berners-cli/berners-cli/commands/init
 function init(name, options) {
     console.log(name, options, process.env.CLI_TARGET_PATH); // 通过环境变量拿到参数
 }

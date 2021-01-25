@@ -4,6 +4,7 @@ const path = require('path');
 const pkgDir = require('pkg-dir').sync;
 const npminstall = require('npminstall');
 const formatPath = require('@berners-cli/format-path');
+const { getDefineRegistry } = require('@berners-cli/get-npm-info');
 
 class Package {
     constructor(options) {
@@ -27,15 +28,21 @@ class Package {
 
     // 检查包是否存在
     exists() {
-
+        return false;
     }
 
     // 安装包
     install() {
         npminstall({
-            root: this.targetPath,
-            storeDir: this.storeDir,
-            
+            root: this.targetPath, // 模块路径
+            storeDir: this.storeDir, // 缓存 package 的存储路径
+            registry: getDefineRegistry(), // 源
+            pkgs: [
+                {
+                    name: this.packageName,
+                    version: this.packageVersion,
+                }
+            ]
         });
     }
 
@@ -50,9 +57,13 @@ class Package {
         // 2.读取package.json - require() 
         // 3.寻找main/lib - path
         // 4.路径兼容（macOS/windows）
-
-        const dir = pkgDir(this.targetPath);
-        // console.log(dir);
+        // console.log('this.targetPath', this.targetPath);
+        if (!this.targetPath) {
+            console.error('targetPath 不存在');
+            return;
+        }
+        
+        const dir = pkgDir(this.targetPath); // 找到模块路径
         if (dir) {
             // 2.读取package.json - require() 
             const pagFile = require(path.resolve(dir, 'package.json'));
@@ -64,6 +75,7 @@ class Package {
                 return formatPath(path.resolve(dir, pagFile.main));
             }
         }
+        console.error('找不到模块');
         return null;
     }
 }

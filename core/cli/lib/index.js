@@ -18,7 +18,7 @@ const userHome = require('user-home');
 const { Command } = require('commander');
 const pkg = require('../package.json');
 const log = require('@berners-cli/log');
-const init = require('@berners-cli/init');
+// const init = require('@berners-cli/init'); // "@berners-cli/init": "file:../../commands/init",
 const exec = require('@berners-cli/exec');
 const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 

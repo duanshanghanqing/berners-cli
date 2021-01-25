@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@berners-cli/get-npm-info": "file:../../utils/get-npm-info",
-    "@berners-cli/init": "file:../../commands/init",
     "@berners-cli/log": "file:../../utils/log",
     "@berners-cli/exec": "file:../exec",
     "colors": "^1.4.0",
