@@ -55,7 +55,7 @@ function exec(projectName, option, parentoOtion) {
     const rootFile = pak.getRootFilePath();
     // console.log('rootFile', rootFile);
 
-    // 执行起来 berners-cli init test --targetPath D:/code/berners-cli/berners-cli/commands/init  查看
+    // 执行起来 berners-cli init test --force --targetPath D:/code/berners-cli/berners-cli/commands/init  查看
     // 实现动态加载模块
     require(rootFile).apply(null, arguments);
 }
