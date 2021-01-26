@@ -133,6 +133,8 @@ async function checkGlobalUpdata() {
     const lastVersion = await getSemverVersion(currentVersion, npmName);
     if (lastVersion) {
         log.warn('更新提醒', colors.yellow(`请手动更新 ${npmName}, 当前的版本是 ${currentVersion}，最新版本：${lastVersion}，执行 npm install -g ${npmName}`));
+    } else {
+        log.error('检查脚手架是否要更新 失败');
     }
 }
 

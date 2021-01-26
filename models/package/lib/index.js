@@ -3,8 +3,10 @@
 const path = require('path');
 const pkgDir = require('pkg-dir').sync;
 const npminstall = require('npminstall');
+const pathExists = require('path-exists').sync;
+const fse = require('fs-extra'); // 比原生的 fs 模块更好用
 const formatPath = require('@berners-cli/format-path');
-const { getDefineRegistry } = require('@berners-cli/get-npm-info');
+const { getDefineRegistry, getNpmLatestVersion } = require('@berners-cli/get-npm-info');
 
 class Package {
     constructor(options) {
@@ -23,16 +25,47 @@ class Package {
         this.packageName = options.packageName;
         // package 的version
         this.packageVersion = options.packageVersion;
+        // 生成package的缓存目录前缀
+        this.cacheFilePathPrefix = this.packageName.replace('/', '_');
     }
 
+    // 缓存目录不存在时，创建缓存目录 
+    // 把 latest 版本号，转换成最大版本号
+    async prepare() {
+        // 传入的是 'latest'
+        if (this.packageVersion === 'latest') {
+            const packageVersion = await getNpmLatestVersion(this.packageName); // 可能这个包在服务器上不存在
+            if (packageVersion) {
+                this.packageVersion = packageVersion;
+            }
+        }
 
-    // 检查包是否存在
-    exists() {
-        return false;
+        // 缓存目录不存在时，创建缓存目录 
+        if (this.storeDir && !pathExists(this.storeDir)) {
+            fse.mkdirpSync(this.storeDir); // 创建缓存目录
+        }
+    }
+
+    // 缓存文件属性
+    get cacheFilePath() {
+        return path.resolve(this.storeDir, `_${this.cacheFilePathPrefix}@${this.packageVersion}@${this.packageName}`);
+    }
+
+    // 检查当前package是否存在
+    async exists() {
+        // 判断缓存目录是否存在
+        if (this.storeDir) { // 缓存模式
+            // await this.prepare();
+            return false;
+        } else { // 非缓存模式
+            return pathExists(this.targetPath);
+        }
     }
 
     // 安装包
-    install() {
+    async install() {
+        // 转换最大版本号
+        await this.prepare();
         npminstall({
             root: this.targetPath, // 模块路径
             storeDir: this.storeDir, // 缓存 package 的存储路径
@@ -47,7 +80,8 @@ class Package {
     }
 
     // 更新包
-    update() {
+    async update() {
+        await this.prepare();
 
     }
 
@@ -75,7 +109,6 @@ class Package {
                 return formatPath(path.resolve(dir, pagFile.main));
             }
         }
-        console.error('找不到模块');
         return null;
     }
 }

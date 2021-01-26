@@ -29,7 +29,9 @@
   "dependencies": {
     "@berners-cli/format-path": "file:../../utils/format-path",
     "@berners-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "fs-extra": "^9.1.0",
     "npminstall": "^4.10.0",
+    "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0"
   }
 }

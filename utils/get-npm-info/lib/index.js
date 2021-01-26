@@ -15,8 +15,13 @@ async function getNpmInfo(npmName, _registry) {
     const registry = _registry || define_registry;
     const npmInfoUrl = urlJoin(registry, npmName);
     // console.log(npmInfoUrl);
-    const res = await axios.get(npmInfoUrl);
-    if (res.status === 200) {
+    let res;
+    try {
+        res = await axios.get(npmInfoUrl);
+    } catch (error) {
+        // console.error('获取包信息失败');
+    }
+    if (res && res.status === 200) {
         return res.data;
     }
     return null;
@@ -49,8 +54,19 @@ async function getSemverVersion(currentVersion, npmName, _registry) {
     return null;
 }
 
+// 获取 npm 地址
 function getDefineRegistry() {
     return define_registry;
+}
+
+// 获取最大版本号
+async function getNpmLatestVersion(npmName, _registry) {
+    let versions = await getNpmVersions(npmName, _registry);
+    if (Array.isArray(versions) && versions.length > 0) {
+        versions = versions.sort((a, b) => semver.gt(a, b)); // 从大到小排序
+        return versions[0];
+    }
+    return null;
 }
 
 module.exports = {
@@ -58,4 +74,5 @@ module.exports = {
     getNpmVersions,
     getSemverVersion,
     getDefineRegistry,
+    getNpmLatestVersion,
 };
