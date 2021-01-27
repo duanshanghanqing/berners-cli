@@ -23,7 +23,7 @@ async function exec(projectName, option, parentoOtion) {
     let targetPath = process.env.CLI_TARGET_PATH;
     const homePath = process.env.CLI_HOME_PATH;
     let storeDir = ''; // 缓存模块目录
-    console.log('packageName', packageName);
+    // console.log('packageName', packageName);
     let pgk;
     if (targetPath) { // 执行起来 berners-cli init test --force --targetPath D:/code/berners-cli/berners-cli/commands/init  查看
         pgk = new Package({
@@ -44,8 +44,8 @@ async function exec(projectName, option, parentoOtion) {
             packageVersion,
             storeDir,
         });
-        console.log('targetPath 不存在 ->', targetPath);
-        console.log('storeDir ->', storeDir);
+        // console.log('targetPath 不存在 ->', targetPath);
+        // console.log('storeDir ->', storeDir);
 
         // 检查当前package是否存在
         if (await pgk.exists()) {
@@ -60,7 +60,11 @@ async function exec(projectName, option, parentoOtion) {
     // console.log('rootFile', rootFile);
     if (rootFile) {
         // 实现动态加载模块
+        // 问题：在当前进程中调用
         require(rootFile).apply(null, arguments);
+
+        // 改造成在node子进程中调用
+        
     }
 }
 

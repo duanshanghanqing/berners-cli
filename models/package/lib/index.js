@@ -93,10 +93,10 @@ class Package {
             return;
         }
         // 2.查询最新版本号对于的路径是否存在
-        const latestFilePath = getSpecificCacheFilePath(latestPackageVersion);
+        const latestFilePath = this.getSpecificCacheFilePath(latestPackageVersion);
         // 3.如果不存在，则直接安装最新版本
         if (!pathExists(latestFilePath)) {
-            npminstall({
+            await npminstall({
                 root: this.targetPath, // 模块路径
                 storeDir: this.storeDir, // 缓存 package 的存储路径
                 registry: getDefineRegistry(), // 源
@@ -107,8 +107,10 @@ class Package {
                     }
                 ]
             });
+            // 更新 packageVersion
+            this.packageVersion = latestPackageVersion;
         }
-        return latestPackageVersion;
+        return latestFilePath;
     }
 
     // 获取入口文件
@@ -122,20 +124,30 @@ class Package {
             console.error('targetPath 不存在');
             return;
         }
-        
-        const dir = pkgDir(this.targetPath); // 找到模块路径
-        if (dir) {
-            // 2.读取package.json - require() 
-            const pagFile = require(path.resolve(dir, 'package.json'));
-            // console.log(pagFile);
-            // 3.寻找main/lib - path
-            if (pagFile && pagFile.main) {
-                // 4.路径兼容（macOS/windows）
-                // console.log(path.resolve(dir, pagFile.main));
-                return formatPath(path.resolve(dir, pagFile.main));
+
+        function _getRootFile(targetPath) {
+            const dir = pkgDir(targetPath); // 找到模块路径
+            if (dir) {
+                // 2.读取package.json - require() 
+                const pagFile = require(path.resolve(dir, 'package.json'));
+                // console.log(pagFile);
+                // 3.寻找main/lib - path
+                if (pagFile && pagFile.main) {
+                    // 4.路径兼容（macOS/windows）
+                    // console.log(path.resolve(dir, pagFile.main));
+                    return formatPath(path.resolve(dir, pagFile.main));
+                }
             }
+            return null;
         }
-        return null;
+
+        // 缓存路径存在
+        if (this.storeDir) {
+            return _getRootFile(this.cacheFilePath);
+        } else {
+            // 不存在
+            return _getRootFile(this.targetPath);
+        }
     }
 }
 
