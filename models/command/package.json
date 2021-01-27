@@ -1,5 +1,5 @@
 {
-  "name": "@berners-cli/init",
+  "name": "@berners-cli/command",
   "version": "1.0.0",
   "description": "> TODO: description",
   "author": "高 俊峰 [WFE] <junfeng.gao@ingeek.com>",
@@ -25,8 +25,5 @@
   },
   "bugs": {
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
-  },
-  "dependencies": {
-    "@berners-cli/command": "file:../../models/command"
   }
 }
