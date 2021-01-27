@@ -4,7 +4,8 @@ const path = require('path');
 const Package = require('@berners-cli/package');
 
 const SETTINGS = {
-    init: '@berners-cli/init', // 命令对应包名
+    // init: '@berners-cli/init', // 命令对应包名
+    init: '@ingeek/point',
 }
 
 const CACHE_DIR = 'dependencies'; // 依赖缓存目录
@@ -22,11 +23,9 @@ async function exec(projectName, option, parentoOtion) {
     let targetPath = process.env.CLI_TARGET_PATH;
     const homePath = process.env.CLI_HOME_PATH;
     let storeDir = ''; // 缓存模块目录
-    
+    console.log('packageName', packageName);
     let pgk;
     if (targetPath) { // 执行起来 berners-cli init test --force --targetPath D:/code/berners-cli/berners-cli/commands/init  查看
-        
-
         pgk = new Package({
             targetPath,
             homePath,
@@ -45,13 +44,17 @@ async function exec(projectName, option, parentoOtion) {
             packageVersion,
             storeDir,
         });
-    
-        if (await pgk.exists()) {
-            // await pgk.update();
-        } else {
-        }
+        console.log('targetPath 不存在 ->', targetPath);
+        console.log('storeDir ->', storeDir);
 
-        // console.log('targetPath 不存在 ->', targetPath);
+        // 检查当前package是否存在
+        if (await pgk.exists()) {
+            // 存在，就升级
+            await pgk.update();
+        } else {
+            // 安装 包
+            await pgk.install();
+        }
     }
     const rootFile = pgk.getRootFilePath();
     // console.log('rootFile', rootFile);

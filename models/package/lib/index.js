@@ -30,9 +30,9 @@ class Package {
     }
 
     // 缓存目录不存在时，创建缓存目录 
-    // 把 latest 版本号，转换成最大版本号
+    // 把 latest 版本号，获取最新版本
     async prepare() {
-        // 传入的是 'latest'
+        // 传入的是 'latest'，获取最新版本
         if (this.packageVersion === 'latest') {
             const packageVersion = await getNpmLatestVersion(this.packageName); // 可能这个包在服务器上不存在
             if (packageVersion) {
@@ -46,17 +46,22 @@ class Package {
         }
     }
 
-    // 缓存文件属性
+    // 缓存文件属性，对象.属性
     get cacheFilePath() {
         return path.resolve(this.storeDir, `_${this.cacheFilePathPrefix}@${this.packageVersion}@${this.packageName}`);
+    }
+
+    // 生成指定版本的路径
+    getSpecificCacheFilePath(packageVersion) {
+        return path.resolve(this.storeDir, `_${this.cacheFilePathPrefix}@${packageVersion}@${this.packageName}`);
     }
 
     // 检查当前package是否存在
     async exists() {
         // 判断缓存目录是否存在
-        if (this.storeDir) { // 缓存模式
-            // await this.prepare();
-            return false;
+        if (this.storeDir) { // 缓存目录存在
+            await this.prepare(); // 获取最新，和升级版本
+            return pathExists(this.cacheFilePath); // 会调用 get cacheFilePath() 方法
         } else { // 非缓存模式
             return pathExists(this.targetPath);
         }
@@ -82,7 +87,28 @@ class Package {
     // 更新包
     async update() {
         await this.prepare();
-
+        // 1.获取最新的版本号
+        const latestPackageVersion = await getNpmLatestVersion(this.packageName);
+        if (!latestPackageVersion) {
+            return;
+        }
+        // 2.查询最新版本号对于的路径是否存在
+        const latestFilePath = getSpecificCacheFilePath(latestPackageVersion);
+        // 3.如果不存在，则直接安装最新版本
+        if (!pathExists(latestFilePath)) {
+            npminstall({
+                root: this.targetPath, // 模块路径
+                storeDir: this.storeDir, // 缓存 package 的存储路径
+                registry: getDefineRegistry(), // 源
+                pkgs: [
+                    {
+                        name: this.packageName,
+                        version: latestPackageVersion,
+                    }
+                ]
+            });
+        }
+        return latestPackageVersion;
     }
 
     // 获取入口文件
