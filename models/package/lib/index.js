@@ -125,6 +125,7 @@ class Package {
             return;
         }
 
+        // 获取一个要执行包路径的，执行入口文件
         function _getRootFile(targetPath) {
             const dir = pkgDir(targetPath); // 找到模块路径
             if (dir) {
