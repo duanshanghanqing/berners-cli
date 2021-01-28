@@ -1,7 +1,11 @@
 'use strict';
 
-module.exports = command;
 
-function command() {
-    // TODO
+
+class Command {
+    constructor() {
+        console.log('Command');
+    }
 }
+
+module.exports = Command;

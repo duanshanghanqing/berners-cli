@@ -7,10 +7,10 @@
 
 
 const Command = require('@berners-cli/command');
-console.log(Command);
-class InitCommand  { // extends Command
+
+class InitCommand extends Command {
     constructor() {
-        console.log('1.1');
+        super();
     }
 }
 
