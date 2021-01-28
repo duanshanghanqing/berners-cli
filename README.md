@@ -15,3 +15,7 @@
 
         cd core/cli
         npm link
+
+# 调用关系
+
+    @berners-cli/core -> @berners-cli/exec -> require(rootFile).apply(null, arguments); -> 执行指定目录文件
