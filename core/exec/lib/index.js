@@ -61,7 +61,7 @@ async function exec(projectName, option, parentoOtion) {
     if (rootFile) {
         // 实现动态加载模块
         // 问题：在当前进程中调用
-        require(rootFile).apply(null, arguments);
+        require(rootFile).apply(null, Array.from(arguments));
 
         // 改造成在node子进程中调用
         
