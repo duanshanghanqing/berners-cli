@@ -27,6 +27,7 @@
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
   },
   "dependencies": {
-    "@berners-cli/package": "file:../../models/package"
+    "@berners-cli/package": "file:../../models/package",
+    "@berners-cli/log": "file:../../utils/log"
   }
 }

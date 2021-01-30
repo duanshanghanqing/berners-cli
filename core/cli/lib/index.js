@@ -11,7 +11,7 @@ module.exports = core;
 // .node(process.dlopen) 
 // 其他文件 当成成js文件执行
 const path = require('path');
-const semver = require('semver');
+// const semver = require('semver');
 const colors = require('colors/safe');
 const pathExists = require('path-exists').sync;
 const userHome = require('user-home');
@@ -20,7 +20,7 @@ const pkg = require('../package.json');
 const log = require('@berners-cli/log');
 // const init = require('@berners-cli/init'); // "@berners-cli/init": "file:../../commands/init",
 const exec = require('@berners-cli/exec');
-const { LOWEST_NOOE_VERSION, DEFAULT_CLI_HOME } = require('./const');
+const { DEFAULT_CLI_HOME } = require('./const'); // LOWEST_NOOE_VERSION
 
 // 实例化脚手架对象
 const program = new Command();
@@ -36,7 +36,7 @@ function core() {
 
 function prepare() {
     checkPkgVersion();
-    checkNodeVersion();
+    // checkNodeVersion();
     checkRoot();
     checkUserHome();
     checkEnv();
@@ -49,6 +49,7 @@ function checkPkgVersion() {
     log.verbose('debugger');
 }
 
+/*
 // 2.检查node版本号
 function checkNodeVersion() {
     // 第一步获取node版本号
@@ -60,6 +61,7 @@ function checkNodeVersion() {
         throw new Error(colors.red(`berners-cli 需要安装 v${LOWEST_NOOE_VERSION} 以上版本的 Node.js`));
     }
 }
+*/
 
 // 3.检查是否是 root 账户
 function checkRoot() {

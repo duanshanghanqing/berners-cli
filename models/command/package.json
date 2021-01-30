@@ -25,5 +25,10 @@
   },
   "bugs": {
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
+  },
+  "dependencies": {
+    "@berners-cli/log": "file:../../utils/log",
+    "colors": "^1.4.0",
+    "semver": "^7.3.4"
   }
 }

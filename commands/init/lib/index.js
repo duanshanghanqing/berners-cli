@@ -9,17 +9,20 @@
 const Command = require('@berners-cli/command');
 
 class InitCommand extends Command {
-    constructor() {
-        super();
+    constructor(argv) {
+        super(argv);
     }
 }
 
 // module.exports.InitCommand = InitCommand;
 
 // berners-cli init test --targetPath D:/code/berners-cli/berners-cli/commands/init
-function init(name, options) {
+// berners-cli init test --force --targetPath /Users/gaojunfeng/Documents/code/berners-cli/commands/init
+function init(argv) {
     // console.log(name, options, process.env.CLI_TARGET_PATH); // 通过环境变量拿到参数
-    return new InitCommand();
+    return new InitCommand(argv);
 }
 
 module.exports = init;
+
+module.exports.InitCommand = InitCommand;

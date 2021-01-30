@@ -2,6 +2,7 @@
 
 const path = require('path');
 const Package = require('@berners-cli/package');
+const log = require('@berners-cli/log');
 
 const SETTINGS = {
     // init: '@berners-cli/init', // 命令对应包名
@@ -61,7 +62,11 @@ async function exec(projectName, option, parentoOtion) {
     if (rootFile) {
         // 实现动态加载模块
         // 问题：在当前进程中调用
-        require(rootFile).apply(null, Array.from(arguments));
+        try {
+            require(rootFile).call(null, Array.from(arguments));
+        } catch (error) {
+            log.error(error.message);
+        }
 
         // 改造成在node子进程中调用
         
