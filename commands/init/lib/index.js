@@ -11,7 +11,17 @@ const Command = require('@berners-cli/command');
 class InitCommand extends Command {
     constructor(argv) {
         super(argv);
+        console.log(argv);
     }
+    init() {
+        this.projectName = this._argv[0] || '';
+        this.force = !!this._cmd.force;
+        console.log(this.projectName, this.force);
+    }
+
+    // exec() {
+    //     throw new Error('exec必须实现');
+    // }
 }
 
 // module.exports.InitCommand = InitCommand;

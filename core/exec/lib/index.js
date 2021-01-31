@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const cp = require('child_process');
 const Package = require('@berners-cli/package');
 const log = require('@berners-cli/log');
 
@@ -63,13 +64,54 @@ async function exec(projectName, option, parentoOtion) {
         // 实现动态加载模块
         // 问题：在当前进程中调用
         try {
-            require(rootFile).call(null, Array.from(arguments));
+            // require(rootFile).call(null, Array.from(arguments));
+            // 通过 node 子进程调用
+            // cp.fork(); // 这个方法不提供回调，需要通过子父进程通信解决
+            // const code = 'console.log(1);';// node -e "console.log(1);"
+            let args = Array.from(arguments);
+            const cmd = args[args.length - 1];
+            const o = Object.create(null);
+            Object.keys(cmd).forEach((key) => {
+                if (
+                    cmd.hasOwnProperty(key) && // 自身属性
+                    !key.startsWith('_') && // 不是 _ 开始
+                    key !== 'parent'
+                ) {
+                    o[key] = cmd[key];
+                }
+            });
+            // console.log(o);
+            args[args.length - 1] = o;
+            const code = `require('${rootFile}').call(null, ${JSON.stringify(args)})`;
+            // cp.spawn('cmd', ['/c', 'node', '-e', code]) // window
+            // const child = cp.spawn('node', ['-e', code], {
+            //     cwd: process.cwd(),
+            //     stdio: 'inherit'
+            // });
+            let child;
+            const option = {
+                cwd: process.cwd(),
+                stdio: 'inherit'
+            };
+            if (process.platform === 'win32') {
+                child = cp.spawn('cmd', ['/c', 'node', '-e', code], option);
+            } else {
+                child = cp.spawn('node', ['-e', code], option);
+            }
+            child.stdout.on('error', (e) => {
+                log.error(e.message);
+                process.exit(1); // 发生错误，中断执行
+            });
+            child.stdout.on('exit', (e) => {
+                log.verbose('命令执行成功：' + e.message);
+                process.exit(e);
+            });
         } catch (error) {
             log.error(error.message);
         }
 
         // 改造成在node子进程中调用
-        
+
     }
 }
 

@@ -11,12 +11,22 @@ class Command {
         if (!argv) {
             throw new Error('参数不能为空！');
         }
+        if (!Array.isArray(argv)) {
+            throw new Error('参数必须为数组！');
+        }
+        if (argv.length < 1) {
+            throw new Error('参数列表为空！');
+        }
+
         this._argv = argv;
+        
         let runner = new Promise((resolve, erject) => {
             let chain = Promise.resolve();
             // chain.then() => Promise对象
             chain = chain.then(() => this.checkNodeVersion());
             chain = chain.then(() => this.initArgs());
+            chain = chain.then(() => this.init());
+            chain = chain.then(() => this.exec());
             // 监听异常
             chain.catch((err) => {
                 log.error(err.message);
@@ -36,7 +46,9 @@ class Command {
     }
 
     initArgs() {
-        this.cmd = this._argv[this._argv.length - 1];
+        this._cmd = this._argv[this._argv.length - 1];
+        this._argv = this._argv.slice(0, this._argv.length - 1);
+        console.log(this._cmd, this._argv);
     }
 
     init() {
