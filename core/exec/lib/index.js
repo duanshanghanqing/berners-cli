@@ -98,11 +98,11 @@ async function exec(projectName, option, parentoOtion) {
             } else {
                 child = cp.spawn('node', ['-e', code], option);
             }
-            child.stdout.on('error', (e) => {
+            child.on('error', (e) => {
                 log.error(e.message);
                 process.exit(1); // 发生错误，中断执行
             });
-            child.stdout.on('exit', (e) => {
+            child.on('exit', (e) => {
                 log.verbose('命令执行成功：' + e.message);
                 process.exit(e);
             });

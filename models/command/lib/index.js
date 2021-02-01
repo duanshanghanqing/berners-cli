@@ -3,7 +3,7 @@
 const semver = require('semver');
 const colors = require('colors');
 const log = require('@berners-cli/log');
-const LOWEST_NOOE_VERSION = '15.0.0';
+const LOWEST_NOOE_VERSION = '10.0.0';
 
 class Command {
     constructor(argv) {
@@ -24,7 +24,7 @@ class Command {
             let chain = Promise.resolve();
             // chain.then() => Promise对象
             chain = chain.then(() => this.checkNodeVersion());
-            chain = chain.then(() => this.initArgs());
+            // chain = chain.then(() => this.initArgs()); // 其实使用高板本的command就不用了，课程老师的比当前项目低
             chain = chain.then(() => this.init());
             chain = chain.then(() => this.exec());
             // 监听异常
@@ -43,12 +43,6 @@ class Command {
         if (!semver.gt(process.version, LOWEST_NOOE_VERSION)) {
             throw new Error(colors.red(`berners-cli 需要安装 v${LOWEST_NOOE_VERSION} 以上版本的 Node.js`));
         }
-    }
-
-    initArgs() {
-        this._cmd = this._argv[this._argv.length - 1];
-        this._argv = this._argv.slice(0, this._argv.length - 1);
-        console.log(this._cmd, this._argv);
     }
 
     init() {
