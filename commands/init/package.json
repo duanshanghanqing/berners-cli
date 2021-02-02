@@ -27,6 +27,8 @@
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
   },
   "dependencies": {
-    "@berners-cli/command": "file:../../models/command"
+    "@berners-cli/command": "file:../../models/command",
+    "fs-extra": "^9.1.0",
+    "inquirer": "^7.3.3"
   }
 }
