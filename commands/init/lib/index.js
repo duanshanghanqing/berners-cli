@@ -12,6 +12,7 @@ const Command = require('@berners-cli/command');
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 const semver = require('semver');
+const { getTemplate } = require('./action');
 
 class InitCommand extends Command {
     constructor(argv) {
@@ -39,6 +40,9 @@ class InitCommand extends Command {
     }
 
     async prepare() {
+        // 0.判断项目模版是否存在
+
+
         const localPath = process.cwd();
         // 1.判断当前目录是否为空
         let ifContinue = false;
