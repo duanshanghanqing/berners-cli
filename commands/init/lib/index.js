@@ -74,7 +74,7 @@ class InitCommand extends Command {
                 // fse.emptyDirSync(localPath);// 清空文件夹
             }
         }
-        
+
         // 3.选择创建项目或组件
         // 4.获取项目的基本信息
         return this.getProjectInfo();
@@ -107,12 +107,12 @@ class InitCommand extends Command {
                     message: '请输入项目名称',
                     default: '',
                     // 对项目名称约束
-                    validate: function(v) {
+                    validate: function (v) {
                         // 输入的首字符必须为英文字符
                         // 尾字符必须为英文或数字，不能为字符
                         // 字符仅允许 “-_”
                         const done = this.async();
-                        setTimeout(function() {
+                        setTimeout(function () {
                             if (/^[a-zA-Z0-9]+[\w]*[a-zA-Z0-9]$/.test(v)) {
                                 done('请输入合法的版本号');
                                 return;
@@ -120,7 +120,7 @@ class InitCommand extends Command {
                             // 合法返回
                             done(null, true);
                         }, 0);
-                        return ;
+                        return;
                     }
                 },
                 {
@@ -128,7 +128,7 @@ class InitCommand extends Command {
                     name: 'projectVersion',
                     message: '请输入项目版本号',
                     default: '',
-                    validate: function(v) {
+                    validate: function (v) {
                         return !!semver.valid(v); // 对版本号校验
                     }
                 }
