@@ -1,5 +1,5 @@
 {
-  "name": "@berners-cli/init",
+  "name": "@berners-cli/utils",
   "version": "1.0.0",
   "description": "> TODO: description",
   "author": "高 俊峰 [WFE] <junfeng.gao@ingeek.com>",
@@ -14,7 +14,7 @@
     "lib"
   ],
   "publishConfig": {
-    "access": "public"
+    "registry": "https://registry.npm.taobao.org/"
   },
   "repository": {
     "type": "git",
@@ -27,14 +27,6 @@
     "url": "https://github.com/duanshanghanqing/berners-cli/issues"
   },
   "dependencies": {
-    "@berners-cli/command": "file:../../models/command",
-    "@berners-cli/request": "file:../../utils/request",
-    "@berners-cli/package": "file:../../models/package",
-    "@berners-cli/utils": "file:../../utils/utils",
-    "@berners-cli/log": "file:../../utils/log",
-    "fs-extra": "^9.1.0",
-    "inquirer": "^7.3.3",
-    "semver": "^7.3.4",
-    "user-home": "^2.0.0"
+    "cli-spinner": "^0.2.10"
   }
 }

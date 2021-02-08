@@ -4,14 +4,18 @@
 // function init(name, options, command) {
 //     console.log(name, options, command.parent._optionValues);
 // }
-
+const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
 const inquirer = require('inquirer');
 const Command = require('@berners-cli/command');
+const Package = require('@berners-cli/package');
+const { spinnerStart, sleep } = require('@berners-cli/utils');
+const log = require('@berners-cli/log');
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 const semver = require('semver');
+const userHome = require('user-home');
 const { getTemplate } = require('./action');
 
 class InitCommand extends Command {
@@ -33,7 +37,9 @@ class InitCommand extends Command {
             // 下载模板
             // 安装模板
             const projectInfo = await this.prepare();
-            console.log('projectInfo', projectInfo);
+            // console.log('projectInfo', projectInfo);
+            this.projectInfo = projectInfo;
+            await this.downloadTemplate();
         } catch (error) {
             throw new Error(error);
         }
@@ -41,7 +47,12 @@ class InitCommand extends Command {
 
     async prepare() {
         // 0.判断项目模版是否存在
-
+        const template = await getTemplate();
+        if (!template || (Array.isArray(template) && template.length === 0)) {
+            throw new Error('项目模板不存在');
+        }
+        // console.log('template', template);
+        this.template = template;
 
         const localPath = process.cwd();
         // 1.判断当前目录是否为空
@@ -77,7 +88,8 @@ class InitCommand extends Command {
 
         // 3.选择创建项目或组件
         // 4.获取项目的基本信息
-        return this.getProjectInfo();
+        const projectInfo = await this.getProjectInfo();
+        return projectInfo;
     }
 
     async getProjectInfo() {
@@ -114,7 +126,7 @@ class InitCommand extends Command {
                         const done = this.async();
                         setTimeout(function () {
                             if (/^[a-zA-Z0-9]+[\w]*[a-zA-Z0-9]$/.test(v)) {
-                                done('请输入合法的版本号');
+                                done('请输入合法的项目名称');
                                 return;
                             }
                             // 合法返回
@@ -131,6 +143,13 @@ class InitCommand extends Command {
                     validate: function (v) {
                         return !!semver.valid(v); // 对版本号校验
                     }
+                },
+                {
+                    type: 'list',
+                    name: 'projectTemplate',
+                    message: '请选择项目模板',
+                    default: '',
+                    choices: this.createTemplateChoices(),
                 }
             ]);
             projectInfo = {
@@ -150,12 +169,50 @@ class InitCommand extends Command {
     }
 
     // 下载模板
-    downloadTemplate() {
+    async downloadTemplate() {
         // 1.通过项目模板API获取项目模板信息
         // 1.1 通过egg.js搭建一套后端系统
         // 1.2 通过npm 存储存储项目模板
         // 1.3 将项目模板信息存储到 mongodb 数据库中
         // 1.4 通过egg.js 获取mongodb中的数据并且通过API返回
+        // console.log(this.template, this.projectInfo);
+        const { projectTemplate } = this.projectInfo;
+        const templateInfo = this.template.find(item => item.npmName === projectTemplate);
+        console.log(templateInfo);
+        console.log(userHome);
+        const targetPath = path.resolve(userHome, '.berners-cli', 'template');
+        const storeDir = path.resolve(userHome, '.berners-cli', 'template', 'node_modules');
+        console.log(targetPath, storeDir);
+        const { npmName, version } = templateInfo;
+        console.log(npmName, version);
+        const templateNpm = new Package({
+            targetPath,
+            storeDir,
+            packageName: npmName,
+            packageVersion: version,
+        });
+        if (!(await templateNpm.exists())) {
+            const spinner = spinnerStart('正在下载模板...'); // 线上进度条
+            await templateNpm.install();
+            await sleep();
+            spinner.stop(true); // 停止进度条
+            log.success('下载模板成功');
+        } else {
+            const spinner = spinnerStart('正在更新模板...'); // 线上进度条
+            await templateNpm.update();
+            await sleep();
+            spinner.stop(true); // 停止进度条
+            log.success('更新模板成功');
+        }
+    }
+
+    createTemplateChoices() {
+        return this.template.map((item) => {
+            return {
+                value: item.npmName,
+                name: item.name,
+            };
+        });
     }
 }
 

@@ -1,6 +1,3 @@
-const request = request('@berners-cli/request');
+const request = require('@berners-cli/request');
 
-module.exports.getTemplate = async(data) => {
-    const res = await request.get('/project/template');
-    console.log(res);
-}
+module.exports.getTemplate = (data) => request.get('/project/template');
