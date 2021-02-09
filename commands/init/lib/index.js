@@ -12,12 +12,16 @@ const Command = require('@berners-cli/command');
 const Package = require('@berners-cli/package');
 const { spinnerStart, sleep } = require('@berners-cli/utils');
 const log = require('@berners-cli/log');
-const TYPE_PROJECT = 'project';
-const TYPE_COMPONENT = 'component';
 const semver = require('semver');
 const userHome = require('user-home');
 const { getTemplate } = require('./action');
 const { throws } = require('assert');
+
+const TYPE_PROJECT = 'project';
+const TYPE_COMPONENT = 'component';
+
+const TEMPLATE_TYPE_NORMAL = 'normal'; // 标准安装
+const TEMPLATE_TYPE_CUSTOM = 'custom'; // 非标准安装
 
 class InitCommand extends Command {
     constructor(argv) {
@@ -34,13 +38,16 @@ class InitCommand extends Command {
     async exec() {
         // throw new Error('exec必须实现');
         try {
-            // 准备阶段
+            // 1.准备阶段
             // 下载模板
             // 安装模板
             const projectInfo = await this.prepare();
             // console.log('projectInfo', projectInfo);
             this.projectInfo = projectInfo;
+            // 2.下载模版
             await this.downloadTemplate();
+            // 3.安装模版
+            await this.installTemplate();
         } catch (error) {
             throw new Error(error);
         }
@@ -179,13 +186,14 @@ class InitCommand extends Command {
         // console.log(this.template, this.projectInfo);
         const { projectTemplate } = this.projectInfo;
         const templateInfo = this.template.find(item => item.npmName === projectTemplate);
-        console.log(templateInfo);
-        console.log(userHome);
+        this.templateInfo = templateInfo;
+        // console.log(templateInfo);
+        // console.log(userHome);
         const targetPath = path.resolve(userHome, '.berners-cli', 'template');
         const storeDir = path.resolve(userHome, '.berners-cli', 'template', 'node_modules');
-        console.log(targetPath, storeDir);
+        // console.log(targetPath, storeDir);
         const { npmName, version } = templateInfo;
-        console.log(npmName, version);
+        // console.log(npmName, version);
         const templateNpm = new Package({
             targetPath,
             storeDir,
@@ -194,10 +202,10 @@ class InitCommand extends Command {
         });
         if (!(await templateNpm.exists())) {
             const spinner = spinnerStart('正在下载模板...'); // 线上进度条
+            await sleep();
             try {
                 await templateNpm.install();
                 log.success('下载模板成功');
-                await sleep();
             } catch (error) {
                 throw error;
             } finally {
@@ -205,10 +213,10 @@ class InitCommand extends Command {
             }  
         } else {
             const spinner = spinnerStart('正在更新模板...'); // 线上进度条
+            await sleep();
             try {
                 await templateNpm.update();
                 log.success('更新模板成功');
-                await sleep();
             } catch (error) {
                 throw error;
             } finally {
@@ -224,6 +232,32 @@ class InitCommand extends Command {
                 name: item.name,
             };
         });
+    }
+
+    async installTemplate() {
+        console.log(this.templateInfo);
+        if (this.templateInfo) {
+            if (!this.templateInfo.type) {
+                this.templateInfo.type = TEMPLATE_TYPE_NORMAL;
+            }
+            if (this.templateInfo.type === TEMPLATE_TYPE_NORMAL) { // 标准安装
+                await this.installNormalTemplate();
+            } else if (this.templateInfo.type === TEMPLATE_TYPE_CUSTOM) { // 自定义安装
+                await this.installCustomTemplate();
+            } else {
+                throw new Error('项目模版类型');
+            }
+        }
+    }
+
+    // 标准安装
+    async installNormalTemplate() {
+
+    }
+
+    // 非标准安装
+    async installCustomTemplate() {
+
     }
 }
 
