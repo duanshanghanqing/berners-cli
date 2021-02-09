@@ -205,22 +205,27 @@ class InitCommand extends Command {
             await sleep();
             try {
                 await templateNpm.install();
-                log.success('下载模板成功');
             } catch (error) {
                 throw error;
             } finally {
                 spinner.stop(true); // 停止进度条
+                if (await templateNpm.exists()) {
+                    log.success('下载模板成功');
+                }
             }  
         } else {
             const spinner = spinnerStart('正在更新模板...'); // 线上进度条
             await sleep();
             try {
                 await templateNpm.update();
-                log.success('更新模板成功');
+                
             } catch (error) {
                 throw error;
             } finally {
                 spinner.stop(true); // 停止进度条
+                if (await templateNpm.exists()) {
+                    log.success('更新模板成功');
+                }
             }
         }
     }
@@ -235,7 +240,7 @@ class InitCommand extends Command {
     }
 
     async installTemplate() {
-        console.log(this.templateInfo);
+        // console.log(this.templateInfo);
         if (this.templateInfo) {
             if (!this.templateInfo.type) {
                 this.templateInfo.type = TEMPLATE_TYPE_NORMAL;
