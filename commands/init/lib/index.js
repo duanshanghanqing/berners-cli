@@ -17,6 +17,7 @@ const TYPE_COMPONENT = 'component';
 const semver = require('semver');
 const userHome = require('user-home');
 const { getTemplate } = require('./action');
+const { throws } = require('assert');
 
 class InitCommand extends Command {
     constructor(argv) {
@@ -193,16 +194,26 @@ class InitCommand extends Command {
         });
         if (!(await templateNpm.exists())) {
             const spinner = spinnerStart('正在下载模板...'); // 线上进度条
-            await templateNpm.install();
-            await sleep();
-            spinner.stop(true); // 停止进度条
-            log.success('下载模板成功');
+            try {
+                await templateNpm.install();
+                log.success('下载模板成功');
+                await sleep();
+            } catch (error) {
+                throw error;
+            } finally {
+                spinner.stop(true); // 停止进度条
+            }  
         } else {
             const spinner = spinnerStart('正在更新模板...'); // 线上进度条
-            await templateNpm.update();
-            await sleep();
-            spinner.stop(true); // 停止进度条
-            log.success('更新模板成功');
+            try {
+                await templateNpm.update();
+                log.success('更新模板成功');
+                await sleep();
+            } catch (error) {
+                throw error;
+            } finally {
+                spinner.stop(true); // 停止进度条
+            }
         }
     }
 
