@@ -10,12 +10,11 @@ const fse = require('fs-extra');
 const inquirer = require('inquirer');
 const Command = require('@berners-cli/command');
 const Package = require('@berners-cli/package');
-const { spinnerStart, sleep } = require('@berners-cli/utils');
+const { spinnerStart, sleep, spawnAsyanc } = require('@berners-cli/utils');
 const log = require('@berners-cli/log');
 const semver = require('semver');
 const userHome = require('user-home');
 const { getTemplate } = require('./action');
-const { throws } = require('assert');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
@@ -211,6 +210,7 @@ class InitCommand extends Command {
                 spinner.stop(true); // 停止进度条
                 if (await templateNpm.exists()) {
                     log.success('下载模板成功');
+                    this.templateNpm = templateNpm;
                 }
             }  
         } else {
@@ -225,6 +225,7 @@ class InitCommand extends Command {
                 spinner.stop(true); // 停止进度条
                 if (await templateNpm.exists()) {
                     log.success('更新模板成功');
+                    this.templateNpm = templateNpm;
                 }
             }
         }
@@ -257,7 +258,51 @@ class InitCommand extends Command {
 
     // 标准安装
     async installNormalTemplate() {
-
+        // console.log(this.templateNpm.cacheFilePath);
+        const spinner = spinnerStart('正在安装模版...');
+        await sleep();
+        let targetPath;
+        try {
+            // 拷贝当前代码至当前目录
+            const templatePath = path.resolve(this.templateNpm.cacheFilePath, 'template');
+            console.log(templatePath);
+            targetPath = path.resolve(process.cwd(), 'template'); // 当前目录
+            fse.ensureDirSync(templatePath); // 确保目录存在
+            fse.ensureDirSync(targetPath);
+            fse.copySync(templatePath, targetPath);// 缓存目录 拷贝到 当前目录
+        } catch (error) {
+            throw error;
+        } finally {
+            spinner.stop(true);
+            log.success('模版安装成功');
+        }
+        // 依赖安装
+        const { installCommand, startCommand } = this.templateInfo;
+        // console.log('this.templateInfo', this.templateInfo);
+        let installRes;
+        if (installCommand) {
+            const installCmd = installCommand.split(' ');
+            const cmd = installCmd[0]; // 截取第一个参数
+            const args = installCmd.slice(1);// 截取后面的参数
+            installRes = await spawnAsyanc(cmd, args, {
+                stdio: 'inherit',
+                cmd: targetPath,
+            });
+        }
+        if (installRes !== 0) {
+            // log.success('安装成功');
+            throw new Error('安装模版失败');
+        }
+        // 启动命令执行
+        if (startCommand) {
+            const startCmd = startCommand.split(' ');
+            const cmd = startCmd[0]; // 截取第一个参数
+            const args = startCmd.slice(1);// 截取后面的参数
+            await spawnAsyanc(cmd, args, {
+                stdio: 'inherit',
+                cmd: targetPath,
+            });
+        }
     }
 
     // 非标准安装

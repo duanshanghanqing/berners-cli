@@ -1,9 +1,10 @@
 'use strict';
 
 const path = require('path');
-const cp = require('child_process');
+// const cp = require('child_process');
 const Package = require('@berners-cli/package');
 const log = require('@berners-cli/log');
+const { spawn } = require('@berners-cli/utils');
 
 const SETTINGS = {
     // init: '@berners-cli/init', // 命令对应包名
@@ -11,6 +12,16 @@ const SETTINGS = {
 }
 
 const CACHE_DIR = 'dependencies'; // 依赖缓存目录
+
+// function spawn(code, option) {
+//     let child;
+//     if (process.platform === 'win32') {
+//         child = cp.spawn('cmd', ['/c', 'node', '-e', code], option);
+//     } else {
+//         child = cp.spawn('node', ['-e', code], option);
+//     }
+//     return child;
+// }
 
 // 实现package包的动态执行
 async function exec(projectName, option, parentoOtion) {
@@ -82,22 +93,26 @@ async function exec(projectName, option, parentoOtion) {
             });
             // console.log(o);
             args[args.length - 1] = o;
+            // 相当于执行： node require('${rootFile}').call(null, ${JSON.stringify(args)})
             const code = `require('${rootFile}').call(null, ${JSON.stringify(args)})`;
             // cp.spawn('cmd', ['/c', 'node', '-e', code]) // window
             // const child = cp.spawn('node', ['-e', code], {
             //     cwd: process.cwd(),
             //     stdio: 'inherit'
             // });
-            let child;
+
+            // let child;
             const option = {
                 cwd: process.cwd(),
                 stdio: 'inherit'
             };
-            if (process.platform === 'win32') {
-                child = cp.spawn('cmd', ['/c', 'node', '-e', code], option);
-            } else {
-                child = cp.spawn('node', ['-e', code], option);
-            }
+
+            // if (process.platform === 'win32') {
+            //     child = cp.spawn('cmd', ['/c', 'node', '-e', code], option);
+            // } else {
+            //     child = cp.spawn('node', ['-e', code], option);
+            // }
+            let child = spawn('node', ['-e', code], option);
             child.on('error', (e) => {
                 log.error(e.message);
                 process.exit(1); // 发生错误，中断执行

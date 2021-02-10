@@ -1,15 +1,11 @@
 {
-  "name": "berners-cli",
+  "name": "imooc-cli-dev-template-vue2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "lerna": "^3.22.1"
-  }
+  "__npminstall_done": true,
+  "_from": "imooc-cli-dev-template-vue2@1.0.0",
+  "_resolved": "https://registry.npm.taobao.org/imooc-cli-dev-template-vue2/download/imooc-cli-dev-template-vue2-1.0.0.tgz"
 }

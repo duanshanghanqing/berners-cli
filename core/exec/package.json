@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@berners-cli/package": "file:../../models/package",
-    "@berners-cli/log": "file:../../utils/log"
+    "@berners-cli/log": "file:../../utils/log",
+    "@berners-cli/utils": "file:../../utils/utils"
   }
 }
